@@ -1,71 +1,70 @@
 ﻿using DAL;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Configuration;
+using Moq;
+using ScientificExperiment.Tests.Database;
+using ScientificExperiment.WebAPI.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WebApi_CSV.Services;
 
 namespace WebApi.Tests.Services
 {
-    public class FileServiceTests
+    public class FileServiceTests : IClassFixture<DatabaseFixture>
     {
+        private readonly DatabaseFixture _fixture;
+
+        public FileServiceTests(DatabaseFixture fixture)
+        {
+            _fixture = fixture;
+        }
         [Fact]
         public async Task GetFileId_Returns_Correct_Id()
         {
-            // Arrange
-            var options = new DbContextOptionsBuilder<DataContext>()
-                .UseSqlite("DataSource=:memory:")
-                .Options;
 
-            using (var context = new DataContext(options))
-            {
-                context.Database.OpenConnection();
-                context.Database.EnsureCreated();
-                context.Files.Add(new DAL.Entities.File { Id = 3, FileName = "test.txt" });
-                await context.SaveChangesAsync();
-            }
+            var files = new List<DAL.Entities.File>
+             {
+                new DAL.Entities.File { Id = 1, FileName = "file1.csv" },
+                new DAL.Entities.File { Id = 2, FileName = "file2.csv" }
+             };
+            _fixture.Context.Files.AddRange(files);
+            _fixture.Context.SaveChanges(); // Сохраняем изменения в базе данных
 
-            using (var context = new DataContext(options))
-            {
-                var service = new FileService(context);
+            var fileService = new FileService(_fixture.Context);
 
-                // Act
-                var fileId = await service.GetFileId("test.txt");
+            // Act
+            var fileId = await fileService.GetFileId("file1.csv");
 
-                // Assert
-                Assert.Equal(3, fileId);
-            }
+            // Assert
+            Assert.Equal(1, fileId);
         }
 
         [Fact]
-        public async Task GetFileName_Returns_Correct_Name()
+        public async Task GetFileName_Returns_Correct_FileName()
         {
-            // Arrange
-            var options = new DbContextOptionsBuilder<DataContext>()
-                .UseSqlite("DataSource=:memory:")
-                .Options;
-
-            using (var context = new DataContext(options))
+            var files = new List<DAL.Entities.File>
             {
-                context.Database.OpenConnection();
-                context.Database.EnsureCreated();
-                context.Files.Add(new DAL.Entities.File { Id = 4, FileName = "test.txt" });
-                await context.SaveChangesAsync();
-            }
+            new DAL.Entities.File { Id = 3, FileName = "file3.csv" },
+            new DAL.Entities.File { Id = 4, FileName = "file4.csv" }
+            };
 
-            using (var context = new DataContext(options))
-            {
-                var service = new FileService(context);
+            _fixture.Context.Files.AddRange(files);
+            _fixture.Context.SaveChanges();
 
-                // Act
-                var fileName = await service.GetFileName(1);
+            var fileService = new FileService(_fixture.Context);
 
-                // Assert
-                Assert.Equal("test.txt", fileName);
-            }
+            // Act
+            var fileName = await fileService.GetFileName(3);
+
+            // Assert
+            Assert.Equal("file3.csv", fileName);
         }
     }
 }
