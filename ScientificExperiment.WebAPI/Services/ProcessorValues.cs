@@ -114,16 +114,16 @@ namespace WebApi_CSV.Services
                 await _context.SaveChangesAsync();
             }
 
-            // Map and save resultModel
+            int fileId = (int)await _fileService.GetFileId(fileModel.FileName);
             var result = _mapper.Map<ResultModel, Result>(resultModel);
-            result.FileId = file?.Id ?? throw new InvalidOperationException("File not found.");
+            result.FileId = fileId;
             await _context.Results.AddAsync(result);
 
             // Map and save valueModels
             var values = _mapper.Map<List<ValueModel>, List<Value>>(valueModels);
             foreach (var value in values)
             {
-                value.FileId = file?.Id ?? throw new InvalidOperationException("File not found.");
+                value.FileId = fileId;
             }
             await _context.Values.AddRangeAsync(values);
 

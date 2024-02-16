@@ -108,7 +108,7 @@ namespace WebApi_CSV.Services
                 FirstTime = firstTime,
                 LastTime = lastTime,
                 MaxTimeWork = maxTimeWork,
-                MinTimeWork = maxTimeWork,
+                MinTimeWork = minTimeWork,
                 AverageTimeWork = avgTimeWork,
                 AverageIndicator = avgIndicator,
                 MedianByIndicator = medianIndicators,

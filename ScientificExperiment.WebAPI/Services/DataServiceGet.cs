@@ -43,26 +43,39 @@ namespace WebApi_CSV.Services
             if (filter.AverageTimeWork_To >= 0)
                 dbResult = dbResult.Where(x => x.AverageTimeWork <= filter.AverageTimeWork_To);
 
-            return await dbResult
+            var results = dbResult
                 .AsNoTracking()
-                .OrderByDescending(x => x.MinTimeWork)
-                .Select(x => _mapper.Map<ResultModel>(x))
-                .ToListAsync();
-            
+                .OrderByDescending(x => x.MinTimeWork);
+
+            List<ResultModel> resultModels = new List<ResultModel>();
+            foreach(var result in results)
+            {
+               string fileName = await _fileService.GetFileName(result.FileId);
+                var resultModel = _mapper.Map<Result, ResultModel>(result);
+                resultModel.FileName = fileName;
+                resultModels.Add(resultModel);
+            }
+            return resultModels;
         }
         /// <summary>
         /// Получает записи из таблицы Values по имени файла, в котором эти данные расположены.
         /// </summary>
-        /// <param name="fileName"></param>
+        /// <param name="fileName">Имя файла, значения экспериментов которого необходимо найти в базе.</param>
         /// <returns>Лист записей Values.</returns>
         public async Task<IEnumerable<ValueModel>> GetValues(string fileName)
         {
             int? fileId = await _fileService.GetFileId(fileName);
-            return await _context.Values.AsNoTracking()
+
+            var values = await _context.Values.AsNoTracking()
                     .Where(x => x.FileId == fileId)
                     .OrderByDescending(x => x.StartDateTime)
-                    .Select(x => _mapper.Map<ValueModel>(x))
+                    .Select(x => _mapper.Map<Value,ValueModel>(x))
                     .ToListAsync();
+            foreach (var value in values)
+            {
+                value.FileName = fileName;
+            }
+            return values;
         }
     }
 }

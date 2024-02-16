@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using WebApi_CSV.Services.Validation;
 
 namespace WebApi_CSV.Models
@@ -13,6 +14,7 @@ namespace WebApi_CSV.Models
         public int WorkTime { get; set; }
         [Range(-0.0000001, double.MaxValue, ErrorMessage = "Значение показателя не может быть меньше 0")]
         public double Indicator { get; set; }
+        [JsonIgnore]
         public List<string>? Errors { get; set; }
     }
 }

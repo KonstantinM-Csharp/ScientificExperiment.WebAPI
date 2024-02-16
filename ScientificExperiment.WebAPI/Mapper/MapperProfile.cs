@@ -15,17 +15,9 @@ namespace WebApi_CSV.Mapper
         }
         public MapperProfile()
         {
-            CreateMap<Result, ResultModel>()
-                .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.FileId.Equals(0) ? null : _fileService.GetFileName(src.FileId)));
+            CreateMap<ResultModel, Result>().ReverseMap();
 
-            CreateMap<ResultModel, Result>()
-               .ForMember(dest => dest.FileId, opt => opt.MapFrom(src => _fileService.GetFileId(src.FileName)));
-
-            CreateMap<Value, ValueModel>()
-                .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.FileId.Equals(0) ? null : _fileService.GetFileName(src.FileId)));
-
-            CreateMap<ValueModel, Value>()
-                .ForMember(dest => dest.FileId, opt => opt.MapFrom(src => _fileService.GetFileId(src.FileName)));
+            CreateMap<ValueModel, Value>().ReverseMap();
 
             CreateMap<FileModel, DAL.Entities.File>();
         }
