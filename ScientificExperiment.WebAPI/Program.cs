@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using WebApi_CSV.Mapper;
-using WebApi_CSV.Middlewares;
-using WebApi_CSV.Services;
+using ScientificExperiment.WebAPI.Middlewares;
+using ScientificExperiment.WebAPI.Services;
+using ScientificExperiment.WebAPI.Mapper;
 
 internal class Program
 {
@@ -25,7 +25,7 @@ internal class Program
         builder.Services.AddScoped<FileService>();
         builder.Services.AddScoped<ModelBuilderService>();
         builder.Services.AddScoped<ProcessorValues>();
-        builder.Services.AddScoped<DataServiceGet>();
+        builder.Services.AddScoped<GetDataFromDbService>();
         builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
         var app = builder.Build();
 

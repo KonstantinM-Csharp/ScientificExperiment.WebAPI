@@ -1,8 +1,11 @@
 ﻿using DAL;
 using Microsoft.EntityFrameworkCore;
 
-namespace WebApi_CSV.Services
+namespace ScientificExperiment.WebAPI.Services
 {
+    /// <summary>
+    /// Содержит методы получения имени файла, id файлаиз базы данных.
+    /// </summary>
     public class FileService
     {
         private readonly DataContext _context;

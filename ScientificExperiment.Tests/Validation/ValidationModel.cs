@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApi_CSV.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApi.Tests.Validation
+
+namespace ScientificExperiment.Tests.Validation
 {
     internal class ValidationModel
     {

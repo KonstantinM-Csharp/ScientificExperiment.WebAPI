@@ -1,9 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using WebApi_CSV.Models;
-using WebApi.Tests.Validation;
+using ScientificExperiment.WebAPI.Models;
 
-namespace WebApi.Tests.Validation.Models
+
+
+namespace ScientificExperiment.Tests.Validation.Models
 {
     public class ValueModelTest
     {

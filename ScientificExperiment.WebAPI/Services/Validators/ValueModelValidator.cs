@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using WebApi_CSV.Models;
+using ScientificExperiment.WebAPI.Models;
 
-namespace WebApi_CSV.Services.Validation
+namespace ScientificExperiment.WebAPI.Services.Validators
 {
     public class ValueModelValidator: AbstractValidator<ValueModel>
     {

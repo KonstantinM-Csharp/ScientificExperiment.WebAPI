@@ -1,4 +1,4 @@
-﻿namespace WebApi_CSV.Exceptions
+﻿namespace ScientificExperiment.WebAPI.Exceptions
 {
     public class CustomExceptions
     {

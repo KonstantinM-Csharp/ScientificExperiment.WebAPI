@@ -1,4 +1,4 @@
-﻿namespace WebApi_CSV.Models
+﻿namespace ScientificExperiment.WebAPI.Models
 {
     public class FileModel
     {

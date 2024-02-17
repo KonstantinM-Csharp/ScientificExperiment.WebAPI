@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApi.Tests.Validation;
-using WebApi_CSV.Models;
+﻿using ScientificExperiment.WebAPI.Models;
 
-namespace WebApi.Tests.Validation.Models
+namespace ScientificExperiment.Tests.Validation.Models
 {
     public class FilterModelTests
     {

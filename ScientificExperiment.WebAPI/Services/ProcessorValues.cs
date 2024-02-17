@@ -1,16 +1,12 @@
-﻿
-using System.Globalization;
-using WebApi_CSV.Models;
-using Microsoft.AspNetCore.Http;
+﻿using ScientificExperiment.WebAPI.Models;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using DAL;
-using System.Collections.Generic;
-using WebApi_CSV.Services.Validation;
 using FluentValidation;
+using ScientificExperiment.WebAPI.Services.Validators;
 
-namespace WebApi_CSV.Services
+namespace ScientificExperiment.WebAPI.Services
 {
     public class ProcessorValues
     {
@@ -30,7 +26,7 @@ namespace WebApi_CSV.Services
         public async Task DataProcessingAsync(IFormFile formFile, string delimiter, string? author, DateTime? creationDateTime)
         {
 
-            FileModel fileModel = await _modelBuilderService.GetFileModelFromData(formFile, author, creationDateTime);
+            FileModel fileModel = await _modelBuilderService.GetFileModelFromFileData(formFile, author, creationDateTime);
             var correctAndIncorrectModels = await ParseDataToValueModelAsync(formFile, delimiter);
             List<ValueModel> values = correctAndIncorrectModels.values;
             List<ValueModel> incorrectValues = correctAndIncorrectModels.incorrectValues;
@@ -39,6 +35,7 @@ namespace WebApi_CSV.Services
                 ResultModel resultModel = await _modelBuilderService.CalculationResult(values);
                 await SavingDb(fileModel, values, resultModel);
             }
+            
         }
         /// <summary>
         /// Считывает данные из файла построчно и записывает данные в объект ValueModel.
@@ -49,7 +46,9 @@ namespace WebApi_CSV.Services
         /// <returns>Коллекция ValueModel, непрошедших валидациюю.</returns>
         private async Task<(List<ValueModel> values, List<ValueModel> incorrectValues)> ParseDataToValueModelAsync(IFormFile formFile, string delimiter)
         {
-            List<ValueModel> values = new List<ValueModel>();
+            try
+            {
+                List<ValueModel> values = new List<ValueModel>();
             List<ValueModel> incorrectValues = new List<ValueModel>();
 
             using (var streamReader = new StreamReader(formFile.OpenReadStream()))
@@ -58,15 +57,15 @@ namespace WebApi_CSV.Services
                 int i = 0;
                 while ((line = await streamReader.ReadLineAsync()) != null)
                 {
-                    if(i==allowedNumberOfRecords)
-                    { 
+                    if (i == allowedNumberOfRecords)
+                    {
                         return (values, incorrectValues);
                     }
                     ValueModel valueModel = await _modelBuilderService.ConvertCsvLine(line, delimiter);
                     valueModel.FileName = formFile.FileName;
                     var validator = new ValueModelValidator();
                     var resultValidation = validator.Validate(valueModel);
-                    if (!resultValidation.IsValid||valueModel.Errors?.Count > 0)
+                    if (!resultValidation.IsValid || valueModel.Errors?.Count > 0)
                     {
                         valueModel.Errors?.Add(resultValidation.Errors.ToString());
                         incorrectValues.Add(valueModel);
@@ -76,8 +75,13 @@ namespace WebApi_CSV.Services
                 }
             }
             return (values, incorrectValues);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Ошибка валидации данных.", ex);
+            }
         }
-       
+
         /// <summary>
         /// Сохраняет модели в базу данных. Если файл с таким именем существует, перезаписывает данные о файле, Value и Result.
         /// </summary>
@@ -88,46 +92,46 @@ namespace WebApi_CSV.Services
         /// <exception cref="InvalidOperationException"></exception>
         private async Task SavingDb(FileModel fileModel, List<ValueModel> valueModels, ResultModel resultModel)
         {
-
-            var file = await _context.Files.FirstOrDefaultAsync(x=>x.FileName==fileModel.FileName);
-            if (file != null)
+            var file = await _context.Files.FirstOrDefaultAsync(x => x.FileName == fileModel.FileName);
+            try
             {
-                file.CreationDateTime = fileModel.CreationDateTime;
-                file.Author = fileModel.Author;
-                
-                var oldResult = await _context.Results
-                                        .Where(x => x.FileId == file.Id)
-                                        .ToListAsync();
-                var oldValues = await _context.Values
-                                        .Where(x => x.FileId == file.Id)
-                                         .ToListAsync();
-                if (oldResult.Count != 0)
-                    _context.Results.RemoveRange(oldResult);
+                if (file != null)
+                {
+                    // Обновляем существующий файл
+                    file.CreationDateTime = fileModel.CreationDateTime;
+                    file.Author = fileModel.Author;
 
-                if (oldValues.Count != 0 )
-                    _context.Values.RemoveRange(oldValues);
-            }
-            else
-            {
-                var newFile = _mapper.Map<FileModel, DAL.Entities.File>(fileModel);
-                await _context.Files.AddAsync(newFile);
+                    // Удаляем старые результаты и значения
+                    _context.Results.RemoveRange(_context.Results.Where(x => x.FileId == file.Id));
+                    _context.Values.RemoveRange(_context.Values.Where(x => x.FileId == file.Id));
+                }
+                else
+                {
+                    // Добавляем новый файл
+                    var newFile = _mapper.Map<FileModel, DAL.Entities.File>(fileModel);
+                    await _context.Files.AddAsync(newFile);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Создаем новые результаты и значения
+                int fileId = (int)await _fileService.GetFileId(fileModel.FileName);
+                var result = _mapper.Map<ResultModel, Result>(resultModel);
+                result.FileId = fileId;
+                await _context.Results.AddAsync(result);
+
+                var values = _mapper.Map<List<ValueModel>, List<Value>>(valueModels);
+                foreach (var value in values)
+                {
+                    value.FileId = fileId;
+                }
+                await _context.Values.AddRangeAsync(values);
+
                 await _context.SaveChangesAsync();
             }
-
-            int fileId = (int)await _fileService.GetFileId(fileModel.FileName);
-            var result = _mapper.Map<ResultModel, Result>(resultModel);
-            result.FileId = fileId;
-            await _context.Results.AddAsync(result);
-
-            // Map and save valueModels
-            var values = _mapper.Map<List<ValueModel>, List<Value>>(valueModels);
-            foreach (var value in values)
+            catch (Exception ex)
             {
-                value.FileId = fileId;
+                throw new InvalidOperationException("Ошибка при сохранении данных в базу данных.", ex);
             }
-            await _context.Values.AddRangeAsync(values);
-
-            await _context.SaveChangesAsync();
         }
     }
 }

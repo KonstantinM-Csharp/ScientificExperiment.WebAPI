@@ -1,18 +1,13 @@
 ﻿using AutoMapper;
 using DAL.Entities;
 using System.Globalization;
-using WebApi_CSV.Models;
-using WebApi_CSV.Services;
+using ScientificExperiment.WebAPI.Models;
+using ScientificExperiment.WebAPI.Services;
 
-namespace WebApi_CSV.Mapper
+namespace ScientificExperiment.WebAPI.Mapper
 {
     public class MapperProfile : Profile
     {
-        private readonly FileService _fileService;
-        public MapperProfile(FileService fileService)
-        {
-             _fileService=fileService;
-        }
         public MapperProfile()
         {
             CreateMap<ResultModel, Result>().ReverseMap();

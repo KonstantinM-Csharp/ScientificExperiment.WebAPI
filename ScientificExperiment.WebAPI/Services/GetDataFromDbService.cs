@@ -2,16 +2,16 @@
 using DAL;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
-using WebApi_CSV.Models;
+using ScientificExperiment.WebAPI.Models;
 
-namespace WebApi_CSV.Services
+namespace ScientificExperiment.WebAPI.Services
 {
-    public class DataServiceGet
+    public class GetDataFromDbService
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly FileService _fileService;
-        public DataServiceGet(DataContext context, IMapper mapper, FileService fileService)
+        public GetDataFromDbService(DataContext context, IMapper mapper, FileService fileService)
         {
             _context = context;
             _mapper = mapper;
@@ -20,7 +20,7 @@ namespace WebApi_CSV.Services
         /// <summary>
         /// Получает записи из Results по заданным фильтрам.
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="filter">Модель фильтра для поиска результатов.</param>
         /// <returns>Лист записей Results</returns>
         public async Task<IEnumerable<ResultModel>> GetResults(FilterModel filter)
         {
@@ -48,6 +48,7 @@ namespace WebApi_CSV.Services
                 .OrderByDescending(x => x.MinTimeWork);
 
             List<ResultModel> resultModels = new List<ResultModel>();
+            //устанавливается имя файла модели
             foreach(var result in results)
             {
                string fileName = await _fileService.GetFileName(result.FileId);

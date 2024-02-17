@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using WebApi_CSV.Models;
-using WebApi_CSV.Services;
-using static WebApi_CSV.Exceptions.CustomExceptions;
+using ScientificExperiment.WebAPI.Models;
+using ScientificExperiment.WebAPI.Services;
+using static ScientificExperiment.WebAPI.Exceptions.CustomExceptions;
 
-namespace WebApi_CSV.Controllers
+namespace ScientificExperiment.WebAPI.Controllers
 {
 
     [Route("api/[controller]/[action]")]
@@ -12,13 +11,12 @@ namespace WebApi_CSV.Controllers
     public class ScienceController : ControllerBase
     {
 
-        private readonly ProcessorValues _processorValues;
-        private readonly DataServiceGet _dataServiceGet;
-        private readonly IFormFile file;
+        private readonly ProcessorValues _processorValuesService;
+        private readonly GetDataFromDbService _dataServiceGet;
 
-        public ScienceController(ProcessorValues processorValues, DataServiceGet dataServiceGet)
+        public ScienceController(ProcessorValues processorValuesService, GetDataFromDbService dataServiceGet)
         {
-            _processorValues = processorValues;
+            _processorValuesService = processorValuesService;
             _dataServiceGet = dataServiceGet;
         }
 
@@ -45,7 +43,7 @@ namespace WebApi_CSV.Controllers
             }
             else
             {
-                 await _processorValues.DataProcessingAsync(file, ";", author, creationDateTime);
+                 await _processorValuesService.DataProcessingAsync(file, ";", author, creationDateTime);
                 return Ok("Данные прошедшие валидацию добавлены.");
             }
         }

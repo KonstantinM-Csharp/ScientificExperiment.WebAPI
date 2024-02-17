@@ -1,19 +1,6 @@
-﻿using DAL;
-using DAL.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Configuration;
-using Moq;
-using ScientificExperiment.Tests.Database;
-using ScientificExperiment.WebAPI.Migrations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using WebApi_CSV.Services;
+﻿using ScientificExperiment.Tests.Database;
+using ScientificExperiment.WebAPI.Services;
+
 
 namespace WebApi.Tests.Services
 {

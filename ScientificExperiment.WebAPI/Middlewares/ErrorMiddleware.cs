@@ -1,6 +1,6 @@
-﻿using static WebApi_CSV.Exceptions.CustomExceptions;
+﻿using static ScientificExperiment.WebAPI.Exceptions.CustomExceptions;
 
-namespace WebApi_CSV.Middlewares
+namespace ScientificExperiment.WebAPI.Middlewares
 {
     public class ErrorMiddleware
     {

@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
-using WebApi_CSV.Models;
+using ScientificExperiment.WebAPI.Models;
 
-namespace WebApi_CSV.Services
+namespace ScientificExperiment.WebAPI.Services
 {
     public class ModelBuilderService
     {
@@ -12,7 +12,7 @@ namespace WebApi_CSV.Services
         /// <param name="author">Автор файла.</param>
         /// <param name="creationDateTime">Дата создания файла.</param>        
         /// <returns>Объект FileModel.</returns>
-        public async Task<FileModel> GetFileModelFromData(IFormFile file, string? author, DateTime? creationDateTime)
+        public async Task<FileModel> GetFileModelFromFileData(IFormFile file, string? author, DateTime? creationDateTime)
         {
             FileModel fileModel = new FileModel
             {

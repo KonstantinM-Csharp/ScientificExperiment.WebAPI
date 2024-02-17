@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApi_CSV.Services.Validation
+namespace ScientificExperiment.WebAPI.Services.Validators
 {
     public class StartDateTimeAttribute : ValidationAttribute
     {

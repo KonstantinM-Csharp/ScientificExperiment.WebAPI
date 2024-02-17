@@ -1,9 +1,9 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using WebApi_CSV.Services.Validation;
+using ScientificExperiment.WebAPI.Services.Validators;
 
-namespace WebApi_CSV.Models
+namespace ScientificExperiment.WebAPI.Models
 {
     public class ValueModel
     {
