@@ -44,7 +44,7 @@ namespace ScientificExperiment.WebAPI.Controllers
             else
             {
                  await _processorValuesService.DataProcessingAsync(file, ";", author, creationDateTime);
-                return Ok("Данные прошедшие валидацию добавлены.");
+                return Ok("Данные прошедшие валидацию добавлены. Значения не прошедшие валидацию были отброшены.");
             }
         }
 

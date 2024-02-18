@@ -14,9 +14,7 @@ namespace DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder){}
 
-
-        // Переопределел метод конфигурации
-        // Указывает где у нас будут прописываться миграции
+        // Указывает, где будут прописываться миграции
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseSqlite(b => b.MigrationsAssembly("ScientificExperiment.WebAPI"));
 

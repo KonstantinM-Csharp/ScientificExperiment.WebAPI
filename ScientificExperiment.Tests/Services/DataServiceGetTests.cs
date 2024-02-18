@@ -51,7 +51,7 @@ namespace ScientificExperiment.Tests.Services
             IMapper mapper = mapperConfiguration.CreateMapper();
 
 
-            var fileService = new Mock<FileService>();
+            var fileService = new Mock<FileService>(_fixture.Context);
 
             var dataServiceGet = new GetDataFromDbService(_fixture.Context, mapper, fileService.Object);
 
@@ -91,7 +91,7 @@ namespace ScientificExperiment.Tests.Services
             IMapper mapper = mapperConfiguration.CreateMapper();
 
 
-            var fileService = new Mock<FileService>();
+            var fileService = new Mock<FileService>(_fixture.Context);
 
             var service = new GetDataFromDbService(_fixture.Context, mapper, fileService.Object);
 

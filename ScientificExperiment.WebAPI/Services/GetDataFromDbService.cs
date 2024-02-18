@@ -3,6 +3,7 @@ using DAL;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using ScientificExperiment.WebAPI.Models;
+using static ScientificExperiment.WebAPI.Exceptions.CustomExceptions;
 
 namespace ScientificExperiment.WebAPI.Services
 {
@@ -43,6 +44,7 @@ namespace ScientificExperiment.WebAPI.Services
             if (filter.AverageTimeWork_To >= 0)
                 dbResult = dbResult.Where(x => x.AverageTimeWork <= filter.AverageTimeWork_To);
 
+
             var results = dbResult
                 .AsNoTracking()
                 .OrderByDescending(x => x.MinTimeWork);
@@ -65,18 +67,25 @@ namespace ScientificExperiment.WebAPI.Services
         /// <returns>Лист записей Values.</returns>
         public async Task<IEnumerable<ValueModel>> GetValues(string fileName)
         {
-            int? fileId = await _fileService.GetFileId(fileName);
 
-            var values = await _context.Values.AsNoTracking()
-                    .Where(x => x.FileId == fileId)
-                    .OrderByDescending(x => x.StartDateTime)
-                    .Select(x => _mapper.Map<Value,ValueModel>(x))
-                    .ToListAsync();
+            int? fileId = await _fileService.GetFileId(fileName);
+            if (fileId != null)
+            { 
+                var values = await _context.Values.AsNoTracking()
+                        .Where(x => x.FileId == fileId)
+                        .OrderByDescending(x => x.StartDateTime)
+                        .Select(x => _mapper.Map<Value, ValueModel>(x))
+                        .ToListAsync();
             foreach (var value in values)
             {
                 value.FileName = fileName;
             }
             return values;
+            }   
+            else 
+            { 
+                throw new NotFoundException() { Model = fileName};
+            }
         }
     }
 }
